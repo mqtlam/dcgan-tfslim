@@ -1,6 +1,5 @@
 import tensorflow as tf
-
-from ops import *
+import tensorflow.contrib.slim as slim
 
 class Generator():
     """Generator model.
@@ -12,11 +11,6 @@ class Generator():
             FLAGS: flags object
         """
         self.f = FLAGS
-        # batch normalization layers
-        self.g_bn0 = batch_norm(name='g/bn0')
-        self.g_bn1 = batch_norm(name='g/bn1')
-        self.g_bn2 = batch_norm(name='g/bn2')
-        self.g_bn3 = batch_norm(name='g/bn3')
 
     def __call__(self, z):
         """Generator function call for training.
@@ -35,24 +29,35 @@ class Generator():
         gf2, gf4, gf8 = gf*2, gf*4, gf*8
 
         # project z and reshape
-        z_, h0_w, h0_b = linear(z, s16*s16*gf8, 'g/h0/lin', with_w=True)
+        with tf.name_scope('g/h0') as h0_scope:
+            z_ = slim.fully_connected(z, s16*s16*gf8,
+                activation_fn=None,
+                scope=h0_scope)
+            h0 = tf.reshape(z_, [-1, s16, s16, gf8])
+            h0 = tf.nn.relu(slim.batch_norm(h0))
 
-        h0 = tf.reshape(z_, [-1, s16, s16, gf8])
-        h0 = tf.nn.relu(self.g_bn0(h0))
+        with tf.name_scope('g/h1') as h1_scope:
+            h1 = slim.conv2d_transpose(h0, gf4, [5, 5],
+                stride=2,
+                normalizer_fn=slim.batch_norm,
+                scope=h1_scope)
 
-        h1, h1_w, h1_b = deconv2d(h0,
-            [self.f.batch_size, s8, s8, gf4], name='g/h1', with_w=True)
-        h1 = tf.nn.relu(self.g_bn1(h1))
+        with tf.name_scope('g/h2') as h2_scope:
+            h2 = slim.conv2d_transpose(h1, gf2, [5, 5],
+                stride=2,
+                normalizer_fn=slim.batch_norm,
+                scope=h2_scope)
 
-        h2, h2_w, h2_b = deconv2d(h1,
-            [self.f.batch_size, s4, s4, gf2], name='g/h2', with_w=True)
-        h2 = tf.nn.relu(self.g_bn2(h2))
+        with tf.name_scope('g/h3') as h3_scope:
+            h3 = slim.conv2d_transpose(h2, gf, [5, 5],
+                stride=2,
+                normalizer_fn=slim.batch_norm,
+                scope=h3_scope)
 
-        h3, h3_w, h3_b = deconv2d(h2,
-            [self.f.batch_size, s2, s2, gf], name='g/h3', with_w=True)
-        h3 = tf.nn.relu(self.g_bn3(h3))
-
-        h4, h4_w, h4_b = deconv2d(h3,
-            [self.f.batch_size, s, s, self.f.c_dim], name='g/h4', with_w=True)
+        with tf.name_scope('g/h4') as h4_scope:
+            h4 = slim.conv2d_transpose(h3, self.f.c_dim, [5, 5],
+                stride=2,
+                activation_fn=None,
+                scope=h4_scope)
 
         return tf.nn.tanh(h4)

@@ -5,7 +5,9 @@ Currently under development. Working version borrows code from
 https://github.com/carpedm20/DCGAN-tensorflow
 
 # Dependencies
-TensorFlow is required. Additionally, install the following dependencies:
+TensorFlow and `tensorflow.contrib.slim` is required.
+
+Additionally, install the following dependencies:
 
 ```bash
 pip install scipy
