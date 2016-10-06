@@ -1,9 +1,6 @@
 # dcgan-tfslim
 Deep Convolutional Generative Adversarial Networks (DCGAN) implemented in TensorFlow-Slim
 
-Currently under development. Working version borrows code from
-https://github.com/carpedm20/DCGAN-tensorflow
-
 # Dependencies
 TensorFlow and `tensorflow.contrib.slim` is required.
 The only other additional dependency is PIL. This can be installed with pip:
