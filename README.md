@@ -6,11 +6,10 @@ https://github.com/carpedm20/DCGAN-tensorflow
 
 # Dependencies
 TensorFlow and `tensorflow.contrib.slim` is required.
-
-Additionally, install the following dependencies:
+The only other additional dependency is PIL. This can be installed with pip:
 
 ```bash
-pip install scipy
+pip install Pillow
 ```
 
 # Setup

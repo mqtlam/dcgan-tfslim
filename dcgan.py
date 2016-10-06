@@ -64,7 +64,7 @@ class DCGAN():
             step: step of training to save
         """
         model_name = "DCGAN.model"
-        model_dir = self.__get_model_dir()
+        model_dir = self.get_model_dir()
         checkpoint_dir = os.path.join(self.f.checkpoint_dir, model_dir)
 
         if not os.path.exists(checkpoint_dir):
@@ -81,7 +81,7 @@ class DCGAN():
         Returns:
             True if any checkpoints exist
         """
-        model_dir = self.__get_model_dir()
+        model_dir = self.get_model_dir()
         checkpoint_dir = os.path.join(self.f.checkpoint_dir, model_dir)
         return os.path.exists(checkpoint_dir)
 
@@ -91,7 +91,7 @@ class DCGAN():
         Returns:
             True if model is loaded successfully
         """
-        model_dir = self.__get_model_dir()
+        model_dir = self.get_model_dir()
         checkpoint_dir = os.path.join(self.f.checkpoint_dir, model_dir)
 
         ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
@@ -103,24 +103,7 @@ class DCGAN():
         else:
             return False
 
-    def __create_summaries(self):
-        """Helper function to create summaries.
-        """
-        # histogram summaries
-        self.z_sum = tf.histogram_summary("z", self.z)
-        self.d_sum = tf.histogram_summary("d/output/real", self.D)
-        self.d__sum = tf.histogram_summary("d/output/fake", self.D_)
-
-        # image summaries
-        self.g_sum = tf.image_summary("G", self.G, max_images=9)
-
-        # scalar summaries
-        self.d_loss_real_sum = tf.scalar_summary("d/loss/real", self.d_loss_real)
-        self.d_loss_fake_sum = tf.scalar_summary("d/loss/fake", self.d_loss_fake)
-        self.d_loss_sum = tf.scalar_summary("d/loss/combined", self.d_loss)
-        self.g_loss_sum = tf.scalar_summary("g/loss/combined", self.g_loss)
-
-    def __get_model_dir(self):
+    def get_model_dir(self):
         """Helper function to get the model directory.
 
         Returns:
@@ -130,3 +113,21 @@ class DCGAN():
                                         self.f.dataset,
                                         self.f.batch_size,
                                         self.f.output_size)
+
+    def __create_summaries(self):
+        """Helper function to create summaries.
+        """
+        # histogram summaries
+        self.z_sum = tf.histogram_summary("z", self.z)
+        self.d_sum = tf.histogram_summary("d/output/real", self.D)
+        self.d__sum = tf.histogram_summary("d/output/fake", self.D_)
+
+        # image summaries
+        self.g_sum = tf.image_summary("generated", self.G, max_images=4)
+        self.real_sum = tf.image_summary("real", self.real_images, max_images=4)
+
+        # scalar summaries
+        self.d_loss_real_sum = tf.scalar_summary("d/loss/real", self.d_loss_real)
+        self.d_loss_fake_sum = tf.scalar_summary("d/loss/fake", self.d_loss_fake)
+        self.d_loss_sum = tf.scalar_summary("d/loss/combined", self.d_loss)
+        self.g_loss_sum = tf.scalar_summary("g/loss/combined", self.g_loss)

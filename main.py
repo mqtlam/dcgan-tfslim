@@ -35,15 +35,15 @@ FLAGS = flags.FLAGS
 def main(_):
     pp.pprint(FLAGS.__flags)
 
-    # path checks
-    if not os.path.exists(os.path.join(FLAGS.checkpoint_dir, FLAGS.experiment_name)):
-        os.path.join(FLAGS.checkpoint_dir, FLAGS.experiment_name)
-    if not os.path.exists(os.path.join(FLAGS.sample_dir, FLAGS.experiment_name)):
-        os.makedirs(os.path.join(FLAGS.sample_dir, FLAGS.experiment_name))
-
     # training/inference
     with tf.Session() as sess:
         dcgan = DCGAN(sess, FLAGS)
+
+        # path checks
+        if not os.path.exists(FLAGS.checkpoint_dir):
+            os.makedirs(FLAGS.checkpoint_dir)
+        if not os.path.exists(os.path.join(FLAGS.log_dir, dcgan.get_model_dir())):
+            os.makedirs(os.path.join(FLAGS.log_dir, dcgan.get_model_dir()))
 
         # load checkpoint if found
         if dcgan.checkpoint_exists():

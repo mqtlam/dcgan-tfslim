@@ -1,29 +1,56 @@
+from PIL import Image
 import numpy as np
-import scipy.misc
-import tensorflow as tf
 
-def center_crop(x, crop_h, crop_w=None, resize_w=64):
-    if crop_w is None:
-        crop_w = crop_h
-    h, w = x.shape[:2]
-    j = int(round((h - crop_h)/2.))
-    i = int(round((w - crop_w)/2.))
-    return scipy.misc.imresize(x[j:j+crop_h, i:i+crop_w],
-                               [resize_w, resize_w])
+def center_crop(image, crop_size=None):
+    """Center crop image.
 
-def transform(image, npx=64, is_crop=True, resize_w=64):
-    # npx : # of pixels width/height of image
+    Args:
+        image: PIL image
+        crop_size:  if specified, size of square to center crop
+                    otherwise, fit largest square to center of image
+
+    Returns:
+        cropped PIL image
+    """
+    width, height = image.size
+
+    # if crop size not specified, use the largest square in the center of image
+    if crop_size is None:
+        crop_size = min(height, width)
+
+    # compute crop parameters
+    top = int(round((height - crop_size)/2.))
+    left = int(round((width - crop_size)/2.))
+    bottom = top + crop_size
+    right = left + crop_size
+
+    return image.crop((left, top, right, bottom))
+
+def get_image(image_path, image_size, is_crop=True):
+    """Load image from file and crop/resize as necessary.
+
+    Args:
+        image_path: path to image
+        image_size: width/height to resize image
+        crop: center crop if True [True]
+
+    Returns:
+        numpy array of loaded/cropped/resized image
+    """
+    # load image
+    img = Image.open(image_path)
+
+    # center crop
     if is_crop:
-        cropped_image = center_crop(image, npx, resize_w=resize_w)
+        img_center_crop = center_crop(img)
     else:
-        cropped_image = image
-    return np.array(cropped_image)/127.5 - 1.
+        img_center_crop = img
 
-def imread(path, is_grayscale = False):
-    if (is_grayscale):
-        return scipy.misc.imread(path, flatten = True).astype(np.float)
-    else:
-        return scipy.misc.imread(path).astype(np.float)
+    # resize
+    img_resized = img_center_crop.resize((image_size, image_size), Image.ANTIALIAS)
 
-def get_image(image_path, image_size, is_crop=True, resize_w=64, is_grayscale = False):
-    return transform(imread(image_path, is_grayscale), image_size, is_crop, resize_w)
+    # convert to numpy and normalize
+    img_array = np.asarray(img_resized).astype(np.float)/127.5 - 1.
+    img.close()
+
+    return img_array

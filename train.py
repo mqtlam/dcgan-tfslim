@@ -33,8 +33,9 @@ def train(dcgan):
     g_sum = tf.merge_summary([dcgan.z_sum, dcgan.d__sum,
         dcgan.g_sum, dcgan.d_loss_fake_sum, dcgan.g_loss_sum])
     d_sum = tf.merge_summary([dcgan.z_sum, dcgan.d_sum,
-        dcgan.d_loss_real_sum, dcgan.d_loss_sum])
-    writer = tf.train.SummaryWriter("./logs", sess.graph)
+        dcgan.real_sum, dcgan.d_loss_real_sum, dcgan.d_loss_sum])
+    writer = tf.train.SummaryWriter(os.path.join(FLAGS.log_dir,
+        dcgan.get_model_dir()), sess.graph)
 
     # training images for sampling
     sample_files = data[0:FLAGS.sample_size]
