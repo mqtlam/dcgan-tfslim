@@ -1,6 +1,7 @@
 import os
 import time
 from glob import glob
+from random import shuffle
 import numpy as np
 import tensorflow as tf
 
@@ -20,7 +21,13 @@ def train(dcgan):
     FLAGS = dcgan.f
 
     # load dataset
-    data = glob(os.path.join(FLAGS.data_dir, FLAGS.dataset, "*.jpg"))
+    list_file = os.path.join(FLAGS.data_dir, '{0}.txt'.format(FLAGS.dataset))
+    if os.path.exists(list_file):
+        with open(list_file, 'r') as f:
+            data = [os.path.join(FLAGS.data_dir, FLAGS.dataset, l.strip()) for l in f]
+    else:
+        data = glob(os.path.join(FLAGS.data_dir, FLAGS.dataset, "*.jpg"))
+        shuffle(data)
 
     # set up Adam optimizers
     d_optim = tf.train.AdamOptimizer(FLAGS.learning_rate, beta1=FLAGS.beta1) \
