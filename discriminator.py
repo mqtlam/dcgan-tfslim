@@ -32,9 +32,12 @@ class Discriminator():
             reuse: reuse variables [False]
 
         Returns:
-            probability of real image
-                values in range of [0, 1]
-                dimensionality is (batch size, 1)
+            2-tuple:
+                1. probability of real image
+                    values in range of [0, 1]
+                    dimensionality is (batch size, 1)
+
+                2. logits instead of probability
         """
         with tf.name_scope('d/h0') as scope:
             reuse_scope = scope if reuse else None

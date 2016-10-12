@@ -20,7 +20,8 @@ class DCGAN():
 
         # inputs: real (training) images
         images_shape = [self.f.output_size, self.f.output_size, self.f.c_dim]
-        self.real_images = tf.placeholder(tf.float32, [self.f.batch_size] + images_shape, name="real_images")
+        self.real_images = tf.placeholder(tf.float32,
+            [self.f.batch_size] + images_shape, name="real_images")
 
         # inputs: z (noise)
         self.z = tf.placeholder(tf.float32, [None, self.f.z_dim], name='z')
@@ -32,15 +33,27 @@ class DCGAN():
         # generator network
         self.G = generator(self.z)
         # discriminator network for real images
-        self.D, self.D_logits = discriminator(self.real_images)
+        self.D_real, self.D_real_logits = discriminator(self.real_images)
         # discriminator network for fake images
-        self.D_, self.D_logits_ = discriminator(self.G, reuse=True)
+        self.D_fake, self.D_fake_logits = discriminator(self.G, reuse=True)
 
         # losses
-        self.d_loss_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(self.D_logits, tf.ones_like(self.D)))
-        self.d_loss_fake = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(self.D_logits_, tf.zeros_like(self.D_)))
-        self.g_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(self.D_logits_, tf.ones_like(self.D_)))
+        self.d_loss_real = tf.reduce_mean(
+            tf.nn.sigmoid_cross_entropy_with_logits(
+                self.D_real_logits,
+                tf.ones_like(self.D_real))
+            )
+        self.d_loss_fake = tf.reduce_mean(
+            tf.nn.sigmoid_cross_entropy_with_logits(
+                self.D_fake_logits,
+                tf.zeros_like(self.D_fake))
+            )
         self.d_loss = self.d_loss_real + self.d_loss_fake
+        self.g_loss = tf.reduce_mean(
+            tf.nn.sigmoid_cross_entropy_with_logits(
+                self.D_fake_logits,
+                tf.ones_like(self.D_fake))
+            )
 
         # create summaries
         self.__create_summaries()
@@ -98,7 +111,8 @@ class DCGAN():
         if ckpt and ckpt.model_checkpoint_path:
             # load model
             ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
-            self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
+            self.saver.restore(self.sess,
+                os.path.join(checkpoint_dir, ckpt_name))
             return True
         else:
             return False
@@ -119,15 +133,23 @@ class DCGAN():
         """
         # histogram summaries
         self.z_sum = tf.histogram_summary("z", self.z)
-        self.d_sum = tf.histogram_summary("d/output/real", self.D)
-        self.d__sum = tf.histogram_summary("d/output/fake", self.D_)
+        self.d_real_sum = tf.histogram_summary("d/output/real", self.D_real)
+        self.d_fake_sum = tf.histogram_summary("d/output/fake", self.D_fake)
 
         # image summaries
-        self.g_sum = tf.image_summary("generated", self.G, max_images=4)
-        self.real_sum = tf.image_summary("real", self.real_images, max_images=4)
+        self.g_sum = tf.image_summary("generated",
+                                      self.G,
+                                      max_images=8)
+        self.real_sum = tf.image_summary("real",
+                                         self.real_images,
+                                         max_images=8)
 
         # scalar summaries
-        self.d_loss_real_sum = tf.scalar_summary("d/loss/real", self.d_loss_real)
-        self.d_loss_fake_sum = tf.scalar_summary("d/loss/fake", self.d_loss_fake)
-        self.d_loss_sum = tf.scalar_summary("d/loss/combined", self.d_loss)
-        self.g_loss_sum = tf.scalar_summary("g/loss/combined", self.g_loss)
+        self.d_loss_real_sum = tf.scalar_summary("d/loss/real",
+                                                 self.d_loss_real)
+        self.d_loss_fake_sum = tf.scalar_summary("d/loss/fake",
+                                                 self.d_loss_fake)
+        self.d_loss_sum = tf.scalar_summary("d/loss/combined",
+                                            self.d_loss)
+        self.g_loss_sum = tf.scalar_summary("g/loss/combined",
+                                            self.g_loss)
