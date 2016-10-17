@@ -1,0 +1,6 @@
+model_checkpoint_path: "demo_celebA_64_64-31651"
+all_model_checkpoint_paths: "demo_celebA_64_64-30002"
+all_model_checkpoint_paths: "demo_celebA_64_64-30502"
+all_model_checkpoint_paths: "demo_celebA_64_64-31002"
+all_model_checkpoint_paths: "demo_celebA_64_64-31502"
+all_model_checkpoint_paths: "demo_celebA_64_64-31651"
