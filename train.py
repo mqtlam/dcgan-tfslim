@@ -135,3 +135,8 @@ def train(dcgan):
             if np.mod(counter, 500) == 2:
                 dcgan.save(counter)
                 print "[checkpoint] saved: {0}".format(time.time() - start_time)
+
+    # save final model
+    dcgan.save(counter)
+    print "[checkpoint] saved: {0}".format(time.time() - start_time)
+
