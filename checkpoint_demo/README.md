@@ -10,7 +10,7 @@ Follow the commands below to load a sample `celebA` model
 
 ```bash
 mkdir -p checkpoint
-ln -s checkpoint_demo/demo_celebA_64_64 checkpoint/demo_celebA_64_64
+ln -s ../checkpoint_demo/demo_celebA_64_64 checkpoint/demo_celebA_64_64
 # add any other desired arguments below
 python main.py --experiment_name demo --dataset celebA
 ```
