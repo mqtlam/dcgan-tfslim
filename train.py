@@ -5,7 +5,7 @@ from random import shuffle
 import numpy as np
 import tensorflow as tf
 
-from image_ops import get_image
+from image_ops import get_image, save_images
 
 def generate_z(sample_size, z_dim):
     """Helper function to generate noise vector.
@@ -78,6 +78,10 @@ def train(dcgan):
     sample = [get_image(sample_file,
                         FLAGS.output_size) for sample_file in sample_files]
     sample_images = np.array(sample).astype(np.float32)
+    sample_path = os.path.join('./', FLAGS.sample_dir,
+                               dcgan.get_model_dir(),
+                               'real_samples.png')
+    save_images(sample_images, [8, 8], sample_path)
 
     # z for sampling
     sample_z = generate_z(FLAGS.sample_size, FLAGS.z_dim)
@@ -132,9 +136,13 @@ def train(dcgan):
                     [dcgan.G, dcgan.d_loss, dcgan.g_loss],
                     feed_dict={dcgan.z: sample_z,
                                dcgan.real_images: sample_images})
-                # (can save sampled images here)
                 print "[sample] time: {0}, d_loss: {1}, g_loss: {2}".format(
                     time.time() - start_time, d_loss, g_loss)
+                # save samples for visualization
+                sample_path = os.path.join('./', FLAGS.sample_dir,
+                                           dcgan.get_model_dir(),
+                                           'train_{0:02d}_{1:04d}.png'.format(epoch, batch_index))
+                save_images(samples, [8, 8], sample_path)
 
             # save model every 500 iterations
             if np.mod(counter, 500) == 2:

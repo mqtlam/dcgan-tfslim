@@ -45,6 +45,8 @@ def main(_):
             os.makedirs(FLAGS.checkpoint_dir)
         if not os.path.exists(os.path.join(FLAGS.log_dir, dcgan.get_model_dir())):
             os.makedirs(os.path.join(FLAGS.log_dir, dcgan.get_model_dir()))
+        if not os.path.exists(os.path.join(FLAGS.sample_dir, dcgan.get_model_dir())):
+            os.makedirs(os.path.join(FLAGS.sample_dir, dcgan.get_model_dir()))
 
         # load checkpoint if found
         if dcgan.checkpoint_exists():
