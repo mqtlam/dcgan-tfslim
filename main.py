@@ -6,6 +6,7 @@ import tensorflow as tf
 
 from dcgan import DCGAN
 from train import train
+import inference
 
 flags = tf.app.flags
 # training params
@@ -66,7 +67,11 @@ def main(_):
         else:
             dcgan.load()
 
-        # inference code can go here
+        # inference/visualization code goes here
+        print "Generating samples..."
+        inference.sample_images(dcgan)
+        print "Generating visualizations of z..."
+        inference.visualize_z(dcgan)
 
 if __name__ == '__main__':
     tf.app.run()
