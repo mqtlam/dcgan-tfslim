@@ -1,6 +1,6 @@
 import os
 import time
-from glob import glob
+import fnmatch
 from random import shuffle
 import numpy as np
 import tensorflow as tf
@@ -38,21 +38,30 @@ def train(dcgan):
     FLAGS = dcgan.f
 
     # load dataset
-    # load order from file, or if not found, load from directory
     list_file = os.path.join(FLAGS.data_dir, '{0}.txt'.format(FLAGS.dataset))
     if os.path.exists(list_file):
+        # load from file when found
         print "Using training list: {0}".format(list_file)
         with open(list_file, 'r') as f:
             data = [os.path.join(FLAGS.data_dir,
                                  FLAGS.dataset, l.strip()) for l in f]
     else:
-        data = glob(os.path.join(FLAGS.data_dir, FLAGS.dataset, "*.{0}".format(FLAGS.image_ext)))
+        # recursively walk dataset directory to get images
+        data = []
+        dataset_dir = os.path.join(FLAGS.data_dir, FLAGS.dataset)
+        for root, dirnames, filenames in os.walk(dataset_dir):
+            for filename in fnmatch.filter(filenames, '*.{0}'.format(FLAGS.image_ext)):
+                data.append(os.path.join(root, filename))
         shuffle(data)
+
+        # save to file for next time
         with open(list_file, 'w') as f:
             for l in data:
-                f.write('{0}\n'.format(l))
+                line = l.replace(dataset_dir + os.sep, '')
+                f.write('{0}\n'.format(line))
 
     assert len(data) > 0, "found 0 training data"
+    print "Found {0} training images.".format(len(data))
 
     # set up Adam optimizers
     d_optim = tf.train.AdamOptimizer(
