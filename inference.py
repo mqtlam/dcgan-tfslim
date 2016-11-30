@@ -3,7 +3,6 @@ import numpy as np
 from time import gmtime, strftime
 
 from image_ops import save_images
-from train import generate_z
 
 def sample_images(dcgan, min_range=-1, max_range=1):
     """Sample images.

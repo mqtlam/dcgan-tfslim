@@ -58,14 +58,14 @@ def main(_):
                 raise IOError("Could not read checkpoints from {0}!".format(
                     FLAGS.checkpoint_dir))
         else:
+            if not FLAGS.train:
+                raise IOError("No checkpoints found but need for sampling!")
             print "No checkpoints found. Training from scratch."
             dcgan.load()
 
         # train DCGAN
         if FLAGS.train:
             train(dcgan)
-        else:
-            dcgan.load()
 
         # inference/visualization code goes here
         print "Generating samples..."
