@@ -90,7 +90,7 @@ def train(dcgan):
     sample_path = os.path.join('./', FLAGS.sample_dir,
                                dcgan.get_model_dir(),
                                'real_samples.png')
-    save_images(sample_images, [8, 8], sample_path)
+    save_images(sample_images, sample_path)
 
     # z for sampling
     sample_z = generate_z(FLAGS.sample_size, FLAGS.z_dim)
@@ -151,7 +151,7 @@ def train(dcgan):
                 sample_path = os.path.join('./', FLAGS.sample_dir,
                                            dcgan.get_model_dir(),
                                            'train_{0:02d}_{1:04d}.png'.format(epoch, batch_index))
-                save_images(samples, [8, 8], sample_path)
+                save_images(samples, sample_path)
 
             # save model every 500 iterations
             if np.mod(counter, 500) == 2:

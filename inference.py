@@ -22,7 +22,7 @@ def sample_images(dcgan, min_range=-1, max_range=1):
     sample_path = os.path.join('./', FLAGS.sample_dir,
                                dcgan.get_model_dir(),
                                'test_{0}.png'.format(strftime("%Y-%m-%d %H:%M:%S", gmtime())))
-    save_images(samples, [8, 8], sample_path)
+    save_images(samples, sample_path)
 
 def visualize_z(dcgan, min_range=-1, max_range=1):
     """Visualize z dimension.
@@ -47,4 +47,4 @@ def visualize_z(dcgan, min_range=-1, max_range=1):
         sample_path = os.path.join('./', FLAGS.sample_dir,
                                    dcgan.get_model_dir(),
                                    'visualize_z_{0}.png'.format(z))
-        save_images(samples, [8, 8], sample_path)
+        save_images(samples, sample_path)

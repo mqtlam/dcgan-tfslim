@@ -21,7 +21,7 @@ class DCGAN():
         # inputs: real (training) images
         images_shape = [self.f.output_size, self.f.output_size, self.f.c_dim]
         self.real_images = tf.placeholder(tf.float32,
-            [self.f.batch_size] + images_shape, name="real_images")
+            [None] + images_shape, name="real_images")
 
         # inputs: z (noise)
         self.z = tf.placeholder(tf.float32, [None, self.f.z_dim], name='z')

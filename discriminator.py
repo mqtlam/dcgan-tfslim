@@ -78,7 +78,7 @@ class Discriminator():
             reuse_scope = scope if reuse else None
             h3_shape = h3.get_shape()
             extra_dim = h3_shape[1].value*h3_shape[2].value*h3_shape[3].value
-            h4 = tf.reshape(h3, [self.f.batch_size, extra_dim])
+            h4 = tf.reshape(h3, [-1, extra_dim])
             h4 = slim.fully_connected(h4, 1,
                 activation_fn=None,
                 reuse=reuse_scope,
