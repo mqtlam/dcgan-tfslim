@@ -22,7 +22,7 @@ def sample_images(dcgan, min_range=-1, max_range=1):
     sample_path = os.path.join('./', FLAGS.sample_dir,
                                dcgan.get_model_dir(),
                                'test_{0}.png'.format(strftime("%Y-%m-%d %H:%M:%S", gmtime())))
-    save_images(samples, [8, 8], sample_path)
+    save_images(samples, sample_path)
 
 def visualize_z(dcgan, min_range=-1, max_range=1):
     """Visualize z dimension.
@@ -37,9 +37,9 @@ def visualize_z(dcgan, min_range=-1, max_range=1):
         max_range: maximum range (must be [-1, 1] and > min_range) [1]
     """
     FLAGS = dcgan.f
-    range_values = np.arange(min_range, max_range, 1./FLAGS.batch_size)
+    range_values = np.arange(min_range, max_range, 1./FLAGS.sample_size)
     for z in xrange(FLAGS.z_dim):
-        sample_z = np.zeros([FLAGS.batch_size, FLAGS.z_dim])
+        sample_z = np.zeros([FLAGS.sample_size, FLAGS.z_dim])
         for i, z_vector in enumerate(sample_z):
             z_vector[z] = range_values[i]
 
@@ -47,4 +47,4 @@ def visualize_z(dcgan, min_range=-1, max_range=1):
         sample_path = os.path.join('./', FLAGS.sample_dir,
                                    dcgan.get_model_dir(),
                                    'visualize_z_{0}.png'.format(z))
-        save_images(samples, [8, 8], sample_path)
+        save_images(samples, sample_path)

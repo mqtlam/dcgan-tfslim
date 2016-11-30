@@ -1,3 +1,4 @@
+from math import sqrt, ceil
 from PIL import Image
 import numpy as np
 
@@ -57,7 +58,7 @@ def get_image(image_path, image_size, is_crop=True):
 
     return img_array
 
-def save_images(images, size, image_path):
+def save_images(images, image_path):
     """Save images.
 
     Postconditions:
@@ -65,15 +66,17 @@ def save_images(images, size, image_path):
 
     Args:
         images: list of images
-        size: [number of rows, number of columns]
         image_path: path to save image
     """
     # transform back from [-1,1] to [0,1]
     images = (images+1.)/2.
 
+    # determine tiled image shape
+    num_cols = int(ceil(sqrt(len(images))))
+    num_rows = int(ceil(1.*len(images)/num_cols))
+
     # create new tiled image
     h, w = images.shape[1], images.shape[2]
-    num_rows, num_cols = size
     img = np.zeros((h * num_rows, w * num_cols, 3))
     for i, image in enumerate(images):
         c = i % num_cols
