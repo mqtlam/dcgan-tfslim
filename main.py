@@ -6,6 +6,7 @@ import tensorflow as tf
 
 from dcgan import DCGAN
 from train import train
+import inference
 
 flags = tf.app.flags
 # training params
@@ -30,6 +31,7 @@ flags.DEFINE_integer("sample_size", 64, "Number of images to sample [64]")
 flags.DEFINE_string("checkpoint_dir", "checkpoint", "Path to save the checkpoint data [checkpoint]")
 flags.DEFINE_string("sample_dir", "samples", "Path to save the image samples [samples]")
 flags.DEFINE_string("log_dir", "logs", "Path to log for TensorBoard [logs]")
+flags.DEFINE_string("image_ext", "jpg", "Image extension to find [jpg]")
 FLAGS = flags.FLAGS
 
 def main(_):
@@ -44,6 +46,8 @@ def main(_):
             os.makedirs(FLAGS.checkpoint_dir)
         if not os.path.exists(os.path.join(FLAGS.log_dir, dcgan.get_model_dir())):
             os.makedirs(os.path.join(FLAGS.log_dir, dcgan.get_model_dir()))
+        if not os.path.exists(os.path.join(FLAGS.sample_dir, dcgan.get_model_dir())):
+            os.makedirs(os.path.join(FLAGS.sample_dir, dcgan.get_model_dir()))
 
         # load checkpoint if found
         if dcgan.checkpoint_exists():
@@ -63,7 +67,11 @@ def main(_):
         else:
             dcgan.load()
 
-        # inference code can go here
+        # inference/visualization code goes here
+        print "Generating samples..."
+        inference.sample_images(dcgan)
+        print "Generating visualizations of z..."
+        inference.visualize_z(dcgan)
 
 if __name__ == '__main__':
     tf.app.run()

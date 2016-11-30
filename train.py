@@ -5,7 +5,7 @@ from random import shuffle
 import numpy as np
 import tensorflow as tf
 
-from image_ops import get_image
+from image_ops import get_image, save_images
 
 def generate_z(sample_size, z_dim):
     """Helper function to generate noise vector.
@@ -41,12 +41,18 @@ def train(dcgan):
     # load order from file, or if not found, load from directory
     list_file = os.path.join(FLAGS.data_dir, '{0}.txt'.format(FLAGS.dataset))
     if os.path.exists(list_file):
+        print "Using training list: {0}".format(list_file)
         with open(list_file, 'r') as f:
             data = [os.path.join(FLAGS.data_dir,
                                  FLAGS.dataset, l.strip()) for l in f]
     else:
-        data = glob(os.path.join(FLAGS.data_dir, FLAGS.dataset, "*.jpg"))
+        data = glob(os.path.join(FLAGS.data_dir, FLAGS.dataset, "*.{0}".format(FLAGS.image_ext)))
         shuffle(data)
+        with open(list_file, 'w') as f:
+            for l in data:
+                f.write('{0}\n'.format(l))
+
+    assert len(data) > 0, "found 0 training data"
 
     # set up Adam optimizers
     d_optim = tf.train.AdamOptimizer(
@@ -72,6 +78,10 @@ def train(dcgan):
     sample = [get_image(sample_file,
                         FLAGS.output_size) for sample_file in sample_files]
     sample_images = np.array(sample).astype(np.float32)
+    sample_path = os.path.join('./', FLAGS.sample_dir,
+                               dcgan.get_model_dir(),
+                               'real_samples.png')
+    save_images(sample_images, [8, 8], sample_path)
 
     # z for sampling
     sample_z = generate_z(FLAGS.sample_size, FLAGS.z_dim)
@@ -87,9 +97,8 @@ def train(dcgan):
             batch_start = batch_index*FLAGS.batch_size
             batch_end = (batch_index+1)*FLAGS.batch_size
             batch_files = data[batch_start:batch_end]
-            batch = [get_image(batch_file,
+            batch_images = [get_image(batch_file,
                                FLAGS.output_size) for batch_file in batch_files]
-            batch_images = np.array(batch).astype(np.float32)
 
             # create batch of random z vectors for training
             batch_z = generate_z(FLAGS.batch_size, FLAGS.z_dim)
@@ -127,9 +136,13 @@ def train(dcgan):
                     [dcgan.G, dcgan.d_loss, dcgan.g_loss],
                     feed_dict={dcgan.z: sample_z,
                                dcgan.real_images: sample_images})
-                # (can save sampled images here)
                 print "[sample] time: {0}, d_loss: {1}, g_loss: {2}".format(
                     time.time() - start_time, d_loss, g_loss)
+                # save samples for visualization
+                sample_path = os.path.join('./', FLAGS.sample_dir,
+                                           dcgan.get_model_dir(),
+                                           'train_{0:02d}_{1:04d}.png'.format(epoch, batch_index))
+                save_images(samples, [8, 8], sample_path)
 
             # save model every 500 iterations
             if np.mod(counter, 500) == 2:
