@@ -57,7 +57,7 @@ def train(dcgan):
         # save to file for next time
         with open(list_file, 'w') as f:
             for l in data:
-                line = l.replace(dataset_dir + '/', '')
+                line = l.replace(dataset_dir + os.sep, '')
                 f.write('{0}\n'.format(line))
 
     assert len(data) > 0, "found 0 training data"
