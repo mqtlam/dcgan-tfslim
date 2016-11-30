@@ -30,6 +30,7 @@ flags.DEFINE_integer("sample_size", 64, "Number of images to sample [64]")
 flags.DEFINE_string("checkpoint_dir", "checkpoint", "Path to save the checkpoint data [checkpoint]")
 flags.DEFINE_string("sample_dir", "samples", "Path to save the image samples [samples]")
 flags.DEFINE_string("log_dir", "logs", "Path to log for TensorBoard [logs]")
+flags.DEFINE_string("image_ext", "jpg", "Image extension to find [jpg]")
 FLAGS = flags.FLAGS
 
 def main(_):

@@ -39,6 +39,8 @@ def get_image(image_path, image_size, is_crop=True):
     """
     # load image
     img = Image.open(image_path)
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
 
     # center crop
     if is_crop:
@@ -50,7 +52,7 @@ def get_image(image_path, image_size, is_crop=True):
     img_resized = img_center_crop.resize((image_size, image_size), Image.ANTIALIAS)
 
     # convert to numpy and normalize
-    img_array = np.asarray(img_resized).astype(np.float)/127.5 - 1.
+    img_array = np.asarray(img_resized).astype(np.float32)/127.5 - 1.
     img.close()
 
     return img_array

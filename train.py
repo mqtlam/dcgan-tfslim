@@ -41,12 +41,18 @@ def train(dcgan):
     # load order from file, or if not found, load from directory
     list_file = os.path.join(FLAGS.data_dir, '{0}.txt'.format(FLAGS.dataset))
     if os.path.exists(list_file):
+        print "Using training list: {0}".format(list_file)
         with open(list_file, 'r') as f:
             data = [os.path.join(FLAGS.data_dir,
                                  FLAGS.dataset, l.strip()) for l in f]
     else:
-        data = glob(os.path.join(FLAGS.data_dir, FLAGS.dataset, "*.jpg"))
+        data = glob(os.path.join(FLAGS.data_dir, FLAGS.dataset, "*.{0}".format(FLAGS.image_ext)))
         shuffle(data)
+        with open(list_file, 'w') as f:
+            for l in data:
+                f.write('{0}\n'.format(l))
+
+    assert len(data) > 0, "found 0 training data"
 
     # set up Adam optimizers
     d_optim = tf.train.AdamOptimizer(
@@ -87,9 +93,8 @@ def train(dcgan):
             batch_start = batch_index*FLAGS.batch_size
             batch_end = (batch_index+1)*FLAGS.batch_size
             batch_files = data[batch_start:batch_end]
-            batch = [get_image(batch_file,
+            batch_images = [get_image(batch_file,
                                FLAGS.output_size) for batch_file in batch_files]
-            batch_images = np.array(batch).astype(np.float32)
 
             # create batch of random z vectors for training
             batch_z = generate_z(FLAGS.batch_size, FLAGS.z_dim)
