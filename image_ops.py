@@ -58,6 +58,23 @@ def get_image(image_path, image_size, is_crop=True):
 
     return img_array
 
+def save_image(image, image_path):
+    """Save an image.
+
+    Postconditions:
+        saves to image file
+
+    Args:
+        images: one image
+        image_path: path to save image
+    """
+    # transform back from [-1,1] to [0,1]
+    img = (image+1.)/2.
+
+    # save image
+    im = Image.fromarray(np.uint8(img*255))
+    im.save(image_path)
+
 def save_images(images, image_path):
     """Save images.
 

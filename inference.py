@@ -2,7 +2,23 @@ import os
 import numpy as np
 from time import gmtime, strftime
 
-from image_ops import save_images
+from image_ops import save_image, save_images
+
+def generate_image(dcgan, z, output_file='test.png'):
+    """Generate image from z vector.
+
+    Postconditions:
+        saves to image file
+
+    Args:
+        dcgan: DCGAN
+        z: z vector
+        output_file: path to save image file [test.png] 
+    """
+    FLAGS = dcgan.f
+    sample_z = np.tile(z, (FLAGS.sample_size, 1))
+    samples = dcgan.sess.run(dcgan.G, feed_dict={dcgan.z: sample_z})
+    save_image(samples[0], output_file)
 
 def sample_images(dcgan, min_range=-1, max_range=1):
     """Sample images.
