@@ -40,19 +40,19 @@ class DCGAN():
         # losses
         self.d_loss_real = tf.reduce_mean(
             tf.nn.sigmoid_cross_entropy_with_logits(
-                self.D_real_logits,
-                tf.ones_like(self.D_real))
+                logits=self.D_real_logits,
+                labels=tf.ones_like(self.D_real))
             )
         self.d_loss_fake = tf.reduce_mean(
             tf.nn.sigmoid_cross_entropy_with_logits(
-                self.D_fake_logits,
-                tf.zeros_like(self.D_fake))
+                logits=self.D_fake_logits,
+                labels=tf.zeros_like(self.D_fake))
             )
         self.d_loss = self.d_loss_real + self.d_loss_fake
         self.g_loss = tf.reduce_mean(
             tf.nn.sigmoid_cross_entropy_with_logits(
-                self.D_fake_logits,
-                tf.ones_like(self.D_fake))
+                logits=self.D_fake_logits,
+                labels=tf.ones_like(self.D_fake))
             )
 
         # create summaries
@@ -132,24 +132,24 @@ class DCGAN():
         """Helper function to create summaries.
         """
         # histogram summaries
-        self.z_sum = tf.histogram_summary("z", self.z)
-        self.d_real_sum = tf.histogram_summary("d/output/real", self.D_real)
-        self.d_fake_sum = tf.histogram_summary("d/output/fake", self.D_fake)
+        self.z_sum = tf.summary.histogram("z", self.z)
+        self.d_real_sum = tf.summary.histogram("d/output/real", self.D_real)
+        self.d_fake_sum = tf.summary.histogram("d/output/fake", self.D_fake)
 
         # image summaries
-        self.g_sum = tf.image_summary("generated",
+        self.g_sum = tf.summary.image("generated",
                                       self.G,
-                                      max_images=8)
-        self.real_sum = tf.image_summary("real",
+                                      max_outputs=8)
+        self.real_sum = tf.summary.image("real",
                                          self.real_images,
-                                         max_images=8)
+                                         max_outputs=8)
 
         # scalar summaries
-        self.d_loss_real_sum = tf.scalar_summary("d/loss/real",
+        self.d_loss_real_sum = tf.summary.scalar("d/loss/real",
                                                  self.d_loss_real)
-        self.d_loss_fake_sum = tf.scalar_summary("d/loss/fake",
+        self.d_loss_fake_sum = tf.summary.scalar("d/loss/fake",
                                                  self.d_loss_fake)
-        self.d_loss_sum = tf.scalar_summary("d/loss/combined",
+        self.d_loss_sum = tf.summary.scalar("d/loss/combined",
                                             self.d_loss)
-        self.g_loss_sum = tf.scalar_summary("g/loss/combined",
+        self.g_loss_sum = tf.summary.scalar("g/loss/combined",
                                             self.g_loss)

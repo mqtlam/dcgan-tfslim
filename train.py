@@ -72,14 +72,14 @@ def train(dcgan):
         FLAGS.learning_rate,
         beta1=FLAGS.beta1
         ).minimize(dcgan.g_loss, var_list=dcgan.g_vars)
-    tf.initialize_all_variables().run()
+    tf.global_variables_initializer().run()
 
     # summaries
-    g_sum = tf.merge_summary([dcgan.z_sum, dcgan.d_fake_sum,
+    g_sum = tf.summary.merge([dcgan.z_sum, dcgan.d_fake_sum,
         dcgan.g_sum, dcgan.d_loss_fake_sum, dcgan.g_loss_sum])
-    d_sum = tf.merge_summary([dcgan.z_sum, dcgan.d_real_sum,
+    d_sum = tf.summary.merge([dcgan.z_sum, dcgan.d_real_sum,
         dcgan.real_sum, dcgan.d_loss_real_sum, dcgan.d_loss_sum])
-    writer = tf.train.SummaryWriter(os.path.join(FLAGS.log_dir,
+    writer = tf.summary.FileWriter(os.path.join(FLAGS.log_dir,
         dcgan.get_model_dir()), sess.graph)
 
     # training images for sampling
