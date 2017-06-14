@@ -9,7 +9,7 @@ Nonetheless, the code is able to generate images.
 
 # Dependencies
 
-**TensorFlow API r1.0 or higher is required.** 
+**TensorFlow 1.1.0 or higher is required.** 
 TensorFlow and `tensorflow.contrib.slim` are required, along with their
 dependencies (e.g. numpy). The only other additional dependency is PIL.
 This can be installed with pip:
